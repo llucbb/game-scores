@@ -1,5 +1,7 @@
 package com.king.gamescores.util;
 
+import java.util.regex.Pattern;
+
 /**
  *
  */
@@ -36,5 +38,13 @@ public final class Strings {
 
     public static boolean isNotEmpty(CharSequence str) {
         return str != null && str.length() > 0;
+    }
+
+    public static boolean isNumeric(CharSequence str) {
+        if (str == null) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
+        return pattern.matcher(str).matches();
     }
 }

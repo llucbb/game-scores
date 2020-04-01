@@ -2,19 +2,19 @@ package com.king.gamescores.server;
 
 import com.king.gamescores.handler.HighScoreHandler;
 import com.king.gamescores.handler.LoginHandler;
+import com.king.gamescores.handler.ResponseHandler;
 import com.king.gamescores.handler.ScoreHandler;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.king.gamescores.handler.HttpStatus.BAD_REQUEST;
+import static java.util.logging.Level.SEVERE;
 
 public class ScoresServer {
 
@@ -49,7 +49,7 @@ public class ScoresServer {
             started = true;
             LOG.info("Server started");
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, e.getMessage(), e);
+            LOG.log(SEVERE, e.getMessage(), e);
             throw e;
         } finally {
             if (!started) {
@@ -62,32 +62,25 @@ public class ScoresServer {
     private void handle(HttpExchange exchange) throws IOException {
         try {
             String path = exchange.getRequestURI().getPath();
-            String[] parts = path.split("/");
-            if (parts.length == 3) {
-                String endpoint = parts[2];
+            String[] paths = path.split("/");
+            if (paths.length == 3) {
+                String endpoint = paths[2];
                 if (endpoint.equals("login")) {
                     new LoginHandler().handle(exchange);
+                    return;
                 } else if (endpoint.startsWith("score")) {
                     new ScoreHandler().handle(exchange);
+                    return;
                 } else if (endpoint.equals("highscorelist")) {
                     new HighScoreHandler().handle(exchange);
+                    return;
                 }
             }
-            badRequest(exchange);
+            ResponseHandler.status(BAD_REQUEST).handle(exchange);
 
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, e.getMessage(), e);
+            LOG.log(SEVERE, e.getMessage(), e);
             throw e;
-        }
-    }
-
-    private void badRequest(HttpExchange exchange) throws IOException {
-        Headers headers = exchange.getResponseHeaders();
-        headers.set("Content-Type", "text/plain; charset=utf-8");
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        exchange.sendResponseHeaders(400, bao.size());
-        try (OutputStream out = exchange.getResponseBody()) {
-            bao.writeTo(out);
         }
     }
 }

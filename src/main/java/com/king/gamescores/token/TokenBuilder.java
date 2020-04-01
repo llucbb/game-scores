@@ -6,10 +6,14 @@ import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TokenBuilder {
 
-    public static final char SEPARATOR_CHAR = '.';
+    private static final Logger LOG = Logger.getLogger(TokenBuilder.class.getName());
+
+    public static final char SEPARATOR_CHAR = '|';
 
     private byte[] keyBytes;
     private String payload;
@@ -52,6 +56,8 @@ public class TokenBuilder {
         byte[] sign = signer.sign(payloadBytes);
         String signature = Base64Codec.encode(sign);
 
-        return body + SEPARATOR_CHAR + signature;
+        String token = body + SEPARATOR_CHAR + signature;
+        LOG.log(Level.CONFIG, "token: " + token);
+        return token;
     }
 }

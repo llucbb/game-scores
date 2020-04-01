@@ -34,10 +34,10 @@ public final class ScoresLogger {
         root.addHandler(fh);
 
         // Create a DEBUG (aka FINE) logger file handler
-        fh = new FileHandler("game-scores-debug.log", true);
-        fh.setFormatter(logFormatter);
-        fh.setLevel(Level.FINEST);
-        root.addHandler(fh);
+//        fh = new FileHandler("game-scores-debug.log", true);
+//        fh.setFormatter(logFormatter);
+//        fh.setLevel(Level.FINEST);
+//        root.addHandler(fh);
 
     }
 }

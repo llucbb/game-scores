@@ -31,19 +31,20 @@ public class TokenSessionKeyService implements SessionKeyService {
         String payload = TokenParser.parser()
                 .setSigningKey(secretKey)
                 .parse(sessionKey);
-        String[] payloadParts = payload.split(String.valueOf(TokenBuilder.SEPARATOR_CHAR));
+        String[] payloadParts = payload.split("\\" + TokenBuilder.SEPARATOR_CHAR);
         return Integer.parseInt(payloadParts[0]);
     }
 
     @Override
-    public boolean isSessionKeyValid(String sessionKey, int userId) throws SignatureException {
-        int userIdExpected = getUserIdFromSessionKey(sessionKey);
-        return userIdExpected == userId && !isSessionKeyExpired(sessionKey);
+    public boolean isSessionKeyValid(String sessionKey) throws SignatureException {
+        return !isSessionKeyExpired(sessionKey);
     }
 
     private boolean isSessionKeyExpired(String sessionKey) throws SignatureException {
-        String payload = TokenParser.parser().parse(sessionKey);
-        String[] payloadParts = payload.split(String.valueOf(TokenBuilder.SEPARATOR_CHAR));
+        String payload = TokenParser.parser()
+                .setSigningKey(secretKey)
+                .parse(sessionKey);
+        String[] payloadParts = payload.split("\\" + TokenBuilder.SEPARATOR_CHAR);
         return LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(payloadParts[1])).isBefore(LocalDateTime.now());
     }
 }

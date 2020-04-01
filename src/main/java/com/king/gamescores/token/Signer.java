@@ -8,11 +8,16 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  *
  */
 public class Signer {
+
+    private static final Logger LOG = Logger.getLogger(Signer.class.getName());
 
     private static final String ALGORITHM = "HmacSHA512";
 
@@ -41,7 +46,8 @@ public class Signer {
             mac.init(key);
             return mac;
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new SignatureException(e.getMessage(), e);
+            LOG.log(SEVERE, e.getMessage(), e);
+            throw new SignatureException(e);
         }
     }
 }
