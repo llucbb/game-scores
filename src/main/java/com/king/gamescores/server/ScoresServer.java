@@ -13,8 +13,12 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ScoresServer {
+
+    private static final Logger LOG = Logger.getLogger(ScoresServer.class.getName());
 
     private static final int DEFAULT_WORKERS = Runtime.getRuntime().availableProcessors() - 1;
 
@@ -35,18 +39,22 @@ public class ScoresServer {
     }
 
     private void startServer(int port, int workers) throws IOException {
-        HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 0);
-        httpServer.createContext("/", this::handle);
         boolean started = false;
         ExecutorService executor = Executors.newFixedThreadPool(workers);
         try {
+            HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 0);
+            httpServer.createContext("/", this::handle);
             httpServer.setExecutor(executor);
             httpServer.start();
             started = true;
-            System.out.println("Server started");
+            LOG.info("Server started");
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
         } finally {
             if (!started) {
                 executor.shutdownNow();
+                LOG.warning("Server stopped");
             }
         }
     }
@@ -67,9 +75,9 @@ public class ScoresServer {
             }
             badRequest(exchange);
 
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            throw ex;
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -80,7 +88,6 @@ public class ScoresServer {
         exchange.sendResponseHeaders(400, bao.size());
         try (OutputStream out = exchange.getResponseBody()) {
             bao.writeTo(out);
-
         }
     }
 }

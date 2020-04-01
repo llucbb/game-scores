@@ -1,5 +1,9 @@
 out/
 
+### Java Logging
+*.log
+*.lck
+
 ### IntelliJ IDEA ###
 .idea
 *.iml
