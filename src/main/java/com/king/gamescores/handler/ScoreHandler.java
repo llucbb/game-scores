@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import static com.king.gamescores.handler.HttpStatus.*;
 import static com.king.gamescores.util.ParamsValidator.isNumeric;
-import static com.king.gamescores.util.ParamsValidator.isSessionKeyValid;
+import static com.king.gamescores.util.ParamsValidator.isSessionKeyProvided;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
@@ -39,7 +39,7 @@ public final class ScoreHandler implements HttpHandler {
         String sessionKeyParam = exchange.getRequestURI().getQuery();
         String[] sessionKeyParams = sessionKeyParam != null ? sessionKeyParam.split("=") : null;
 
-        if (isNumeric(level) && isSessionKeyValid(sessionKeyParams)) {
+        if (isNumeric(level) && isSessionKeyProvided(sessionKeyParams)) {
 
             String sessionKey = sessionKeyParams[1];
             int userId;

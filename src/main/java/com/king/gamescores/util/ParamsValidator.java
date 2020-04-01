@@ -9,7 +9,8 @@ public final class ParamsValidator {
     private static final Logger LOG = Logger.getLogger(ParamsValidator.class.getName());
 
     private static final String ERR_IS_NOT_NUMERIC = "'%s' must be a 31 bit unsigned integer number";
-    private static final String ERR_SESSION_KEY_NOT_PROVIDED = "sessionkey has not been provided";
+    private static final String SESSION_KEY = "sessionkey";
+    private static final String ERR_SESSION_KEY_NOT_PROVIDED = SESSION_KEY + " has not been provided";
 
     private ParamsValidator() {
     }
@@ -28,9 +29,9 @@ public final class ParamsValidator {
         return true;
     }
 
-    public static boolean isSessionKeyValid(String[] sessionKeyParams) {
+    public static boolean isSessionKeyProvided(String[] sessionKeyParams) {
         if (sessionKeyParams == null || sessionKeyParams.length != 2
-                || !sessionKeyParams[0].equals("sessionkey") || !Strings.isNotEmpty(sessionKeyParams[1])) {
+                || !sessionKeyParams[0].equals(SESSION_KEY) || !Strings.isNotEmpty(sessionKeyParams[1])) {
             LOG.log(SEVERE, ERR_SESSION_KEY_NOT_PROVIDED);
             return false;
         }

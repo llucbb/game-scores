@@ -18,8 +18,6 @@ public final class LoginHandler implements HttpHandler {
 
     private static final Logger LOG = Logger.getLogger(LoginHandler.class.getName());
 
-    private static final String ERR_USER_ID_IS_NOT_NUMERIC = "userid '%s' must be a 31 bit unsigned integer number";
-
     private final SessionKeyService sessionKeyService;
 
     public LoginHandler() {
