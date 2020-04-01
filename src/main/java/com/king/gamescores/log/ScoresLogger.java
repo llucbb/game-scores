@@ -23,7 +23,7 @@ public final class ScoresLogger {
 
         // Create a logger console handler
         ConsoleHandler ch = new ConsoleHandler();
-        ch.setLevel(Level.ALL);
+        ch.setLevel(Level.INFO);
         ch.setFormatter(logFormatter);
         root.addHandler(ch);
 

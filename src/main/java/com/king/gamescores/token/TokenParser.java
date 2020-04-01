@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class TokenParser {
 
-    private static final Logger LOG = Logger.getLogger(TokenBuilder.class.getName());
+    private static final Logger LOG = Logger.getLogger(TokenParser.class.getName());
 
     private byte[] keyBytes;
 
@@ -43,8 +43,7 @@ public class TokenParser {
         }
 
         if (delimiterCount != 1) {
-            String msg = "Token must contain exactly 1 separator characters. Found: " + delimiterCount;
-            throw new RuntimeException(msg);
+            throw new IllegalStateException("Token must contain exactly 1 separator characters. Found: " + delimiterCount);
         }
 
         if (sb.length() > 0) {
@@ -52,7 +51,7 @@ public class TokenParser {
         }
 
         if (base64Payload == null) {
-            throw new RuntimeException("Token '" + token + "' does not have a payload");
+            throw new IllegalStateException("Token does not have a payload");
         }
 
         // Payload

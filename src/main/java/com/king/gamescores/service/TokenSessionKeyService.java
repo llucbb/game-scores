@@ -13,6 +13,10 @@ public class TokenSessionKeyService implements SessionKeyService {
 
     private final String secretKey;
 
+    private TokenSessionKeyService() {
+        secretKey = null;
+    }
+
     public TokenSessionKeyService(String secretKey) {
         this.secretKey = secretKey;
     }
@@ -45,6 +49,8 @@ public class TokenSessionKeyService implements SessionKeyService {
                 .setSigningKey(secretKey)
                 .parse(sessionKey);
         String[] payloadParts = payload.split("\\" + TokenBuilder.SEPARATOR_CHAR);
-        return LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(payloadParts[1])).isBefore(LocalDateTime.now());
+        String expiration = payloadParts[1];
+        LocalDateTime expirationDate = LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(expiration));
+        return expirationDate.isBefore(LocalDateTime.now());
     }
 }

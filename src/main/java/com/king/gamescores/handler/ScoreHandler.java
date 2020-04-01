@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.logging.Logger;
 
-import static com.king.gamescores.handler.HttpStatus.BAD_REQUEST;
-import static com.king.gamescores.handler.HttpStatus.OK;
-import static java.util.logging.Level.*;
+import static com.king.gamescores.handler.HttpStatus.*;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 
 public final class ScoreHandler implements HttpHandler {
 
@@ -34,51 +34,66 @@ public final class ScoreHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        LOG.log(CONFIG, "-> handle");
-
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
 
         String level = paths[1];
-        if (!Strings.isNumeric(level)) {
-            String msg = String.format(ERR_LEVEL_IS_NOT_NUMERIC, level);
-            LOG.log(SEVERE, msg);
-            ResponseHandler.status(BAD_REQUEST).response(msg).handle(exchange);
-            return;
-        }
 
-        // Validate sessionkey
-        String query = exchange.getRequestURI().getQuery();
-        if (!Strings.isNotEmpty(query)) {
-            LOG.log(SEVERE, ERR_SESSION_KEY_NOT_PROVIDED);
-            ResponseHandler.status(BAD_REQUEST).response(ERR_SESSION_KEY_NOT_PROVIDED).handle(exchange);
-            return;
-        }
-        String[] queries = query.split("=");
-        if (queries.length != 2 && !queries[0].equals("sessionkey") && !Strings.isNotEmpty(queries[1])) {
-            LOG.log(SEVERE, ERR_SESSION_KEY_NOT_PROVIDED);
-            ResponseHandler.status(BAD_REQUEST).response(ERR_SESSION_KEY_NOT_PROVIDED).handle(exchange);
-            return;
-        }
+        String sessionKeyParam = exchange.getRequestURI().getQuery();
+        String[] sessionKeyParams = sessionKeyParam != null ? sessionKeyParam.split("=") : null;
 
-        String sessionKey = queries[1];
-        try {
+        if (isLevelValid(level) && isSessionKeyValid(sessionKeyParams)) {
 
-            int userId = sessionKeyService.getUserIdFromSessionKey(sessionKey);
-            if (sessionKeyService.isSessionKeyValid(sessionKey)) {
-                LOG.log(INFO, String.format("userId successfully generated : %s", userId));
-                ResponseHandler.status(OK).response(String.valueOf(userId)).handle(exchange);
-            } else {
-                LOG.log(SEVERE, String.format("userId error generated : %s", userId));
-                ResponseHandler.status(BAD_REQUEST).response(String.valueOf(userId)).handle(exchange);
+            String sessionKey = sessionKeyParams[1];
+            int userId;
+            try {
+                userId = sessionKeyService.getUserIdFromSessionKey(sessionKey);
+
+            } catch (SignatureException e) {
+                LOG.log(SEVERE, "sessionkey is not valid", e);
+                ResponseHandler.status(UNAUTHORIZED).handle(exchange);
+                return;
             }
 
-        } catch (SignatureException e) {
-            LOG.log(SEVERE, e.getMessage(), e);
-            ResponseHandler.status(BAD_REQUEST).response(e.getMessage()).handle(exchange);
+            try {
+
+                if (sessionKeyService.isSessionKeyValid(sessionKey)) {
+
+                    LOG.log(INFO, String.format("sessionkey successfully validated for userid: %s", userId));
+                    ResponseHandler.status(OK).handle(exchange);
+                } else {
+                    LOG.log(SEVERE, "sessionkey has been expired");
+                    ResponseHandler.status(UNAUTHORIZED).handle(exchange);
+                }
+
+            } catch (SignatureException e) {
+                LOG.log(SEVERE, e.getMessage(), e);
+                ResponseHandler.status(UNAUTHORIZED).handle(exchange);
+            }
+        } else {
+            ResponseHandler.status(BAD_REQUEST).handle(exchange);
         }
+    }
 
+    private boolean isLevelValid(String levelParam) {
+        // Validate level path parameter
+        String msg = String.format(ERR_LEVEL_IS_NOT_NUMERIC, levelParam);
+        try {
+            Integer.parseInt(levelParam);
+        } catch (NumberFormatException e) {
+            LOG.log(SEVERE, msg);
+            return false;
+        }
+        return true;
+    }
 
-        LOG.log(CONFIG, "<- handle");
+    private boolean isSessionKeyValid(String[] sessionKeyParams) {
+        // Validate sessionkey query parameter
+        if (sessionKeyParams == null || sessionKeyParams.length != 2
+                || !sessionKeyParams[0].equals("sessionkey") || !Strings.isNotEmpty(sessionKeyParams[1])) {
+            LOG.log(SEVERE, ERR_SESSION_KEY_NOT_PROVIDED);
+            return false;
+        }
+        return true;
     }
 }

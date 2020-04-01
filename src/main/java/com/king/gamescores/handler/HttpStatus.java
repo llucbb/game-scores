@@ -2,7 +2,7 @@ package com.king.gamescores.handler;
 
 public enum HttpStatus {
 
-    OK(200), BAD_REQUEST(400);
+    OK(200), BAD_REQUEST(400), UNAUTHORIZED(401);
 
     private final int value;
 
