@@ -7,7 +7,7 @@ public class Base64Codec {
 
     public static String encode(byte[] data) {
         String base64Text = DatatypeConverter.printBase64Binary(data);
-        byte[] bytes = base64Text.getBytes(StandardCharsets.US_ASCII);
+        byte[] bytes = base64Text.getBytes(StandardCharsets.UTF_8);
         bytes = removePadding(bytes);
 
         for (int i = 0; i < bytes.length; ++i) {
@@ -18,7 +18,7 @@ public class Base64Codec {
             }
         }
 
-        return new String(bytes, StandardCharsets.US_ASCII);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     private static byte[] removePadding(byte[] bytes) {
