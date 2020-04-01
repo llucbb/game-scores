@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class HighScoreHandler implements HttpHandler {
+public final class HighScoreHandler implements HttpHandler {
 
     private static final Logger LOG = Logger.getLogger(HighScoreHandler.class.getName());
 
