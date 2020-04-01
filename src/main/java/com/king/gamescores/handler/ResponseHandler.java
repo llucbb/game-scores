@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 
 public final class ResponseHandler implements HttpHandler {
 
-
     private final HttpStatus httpStatus;
+
     private String body;
 
     private ResponseHandler(HttpStatus httpStatus) {
