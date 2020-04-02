@@ -1,18 +1,21 @@
 package com.king.gamescores.token;
 
-import org.junit.Assert;
+import com.king.gamescores.util.Strings;
 import org.junit.Test;
 
 import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class TokenBuilderTest {
 
     @Test
     public void tokenBuilderShouldGenerateATokenWithValidSignature() throws SignatureException {
-        String secretKey = "changeit";
-        String userId = "userId";
+        String secretKey = "test";
+        String userId = "1";
         long expirationSeconds = 600; //10 min
         LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(expirationSeconds);
         String expiration = DateTimeFormatter.ISO_DATE_TIME.format(expirationDate);
@@ -24,8 +27,7 @@ public class TokenBuilderTest {
                 .setExpiration(expirationDate)
                 .build();
 
-        Assert.assertNotNull(token);
-        Assert.assertFalse(token.isEmpty());
-        Assert.assertEquals(payloadExpected, TokenParser.parser().setSigningKey(secretKey).parse(token));
+        assertTrue(Strings.isNotEmpty(token));
+        assertEquals(payloadExpected, TokenParser.parser().setSigningKey(secretKey).parse(token));
     }
 }
