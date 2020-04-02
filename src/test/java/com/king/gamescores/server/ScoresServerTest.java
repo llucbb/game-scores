@@ -52,7 +52,7 @@ public class ScoresServerTest {
     private ScoresServer scoresServer;
 
     // Mock SessionKeyService
-    private SessionKeyService sessionKeyService = new SessionKeyService() {
+    private final SessionKeyService sessionKeyService = new SessionKeyService() {
         public String generateSessionKey(int userId) {
             return EXPECTED_TOKEN;
         }
@@ -67,7 +67,7 @@ public class ScoresServerTest {
     };
 
     // Mock ScoresService
-    private ScoresService scoresService = new ScoresService() {
+    private final ScoresService scoresService = new ScoresService() {
         @Override
         public void registerScore(int level, int userId, int score) {
         }
