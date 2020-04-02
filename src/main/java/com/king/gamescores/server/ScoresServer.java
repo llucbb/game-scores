@@ -22,20 +22,20 @@ public class ScoresServer {
 
     private static final int DEFAULT_WORKERS = Runtime.getRuntime().availableProcessors() - 1;
 
-    public static void start(int port) throws IOException {
-        new ScoresServer(port);
-    }
-
-    public static void start(int port, int workers) throws IOException {
-        new ScoresServer(port, workers);
-    }
-
     private ScoresServer(int port) throws IOException {
         startServer(port, DEFAULT_WORKERS);
     }
 
     private ScoresServer(int port, int workers) throws IOException {
         startServer(port, workers);
+    }
+
+    public static void start(int port) throws IOException {
+        new ScoresServer(port);
+    }
+
+    public static void start(int port, int workers) throws IOException {
+        new ScoresServer(port, workers);
     }
 
     private void startServer(int port, int workers) throws IOException {

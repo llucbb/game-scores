@@ -1,4 +1,4 @@
-package com.king.gamescores.data;
+package com.king.gamescores.service;
 
 import java.util.Collections;
 import java.util.Map;
@@ -6,30 +6,45 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ScoresData {
+/**
+ *
+ */
+public class SingletonScoresService implements ScoresService {
 
     private static final int DEFAULT_MAX_NUMBER = 15;
 
-    private static ScoresData instance = null;
+    private static SingletonScoresService instance = null;
 
-    private final Map<Integer, Map<Integer, Integer>> scores;
-    private final int maxNumber;
+    protected final Map<Integer, Map<Integer, Integer>> scores;
+    protected final int maxNumber;
 
-    private ScoresData() {
+    /**
+     *
+     */
+    private SingletonScoresService() {
         scores = new ConcurrentHashMap<>();
         maxNumber = DEFAULT_MAX_NUMBER;
     }
 
-    private ScoresData(int maxNumber) {
+    /**
+     * For tests proposes
+     *
+     * @param maxNumber maximum number of scores per level
+     */
+    protected SingletonScoresService(int maxNumber) {
         scores = new ConcurrentHashMap<>();
         this.maxNumber = maxNumber;
     }
 
-    public static ScoresData getInstance() {
+    /**
+     *
+     * @return
+     */
+    public static SingletonScoresService getInstance() {
         if (instance == null) {
-            synchronized (ScoresData.class) {
+            synchronized (SingletonScoresService.class) {
                 if (instance == null) {
-                    instance = new ScoresData();
+                    instance = new SingletonScoresService();
                 }
             }
         }
@@ -37,15 +52,12 @@ public final class ScoresData {
     }
 
     /**
-     * Only for test purposes
      *
-     * @param maxNumber maximum number of scores per level
-     * @return ScoresData
+     * @param level
+     * @param userId
+     * @param score
      */
-    public static ScoresData getInstance(int maxNumber) {
-        return new ScoresData(maxNumber);
-    }
-
+    @Override
     public void registerScore(int level, int userId, int score) {
         Map<Integer, Integer> scoreMap = scores.get(level);
         if (scoreMap != null) {
@@ -69,6 +81,12 @@ public final class ScoresData {
         }
     }
 
+    /**
+     *
+     * @param level
+     * @return
+     */
+    @Override
     public String getHighScoresForLevel(int level) {
         SortedMap<Integer, Integer> highestScores = new TreeMap<>(Collections.reverseOrder());
         Map<Integer, Integer> scoreMap = scores.get(level);

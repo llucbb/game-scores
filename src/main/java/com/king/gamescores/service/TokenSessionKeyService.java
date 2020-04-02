@@ -7,6 +7,9 @@ import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ *
+ */
 public class TokenSessionKeyService implements SessionKeyService {
 
     private static final long EXPIRATION_SECONDS = 600; //10 min
@@ -17,10 +20,18 @@ public class TokenSessionKeyService implements SessionKeyService {
         secretKey = null;
     }
 
+    /**
+     * @param secretKey
+     */
     public TokenSessionKeyService(String secretKey) {
         this.secretKey = secretKey;
     }
 
+    /**
+     * @param userId
+     * @return
+     * @throws SignatureException
+     */
     @Override
     public String generateSessionKey(int userId) throws SignatureException {
         return TokenBuilder.builder()
@@ -30,6 +41,11 @@ public class TokenSessionKeyService implements SessionKeyService {
                 .build();
     }
 
+    /**
+     * @param sessionKey
+     * @return
+     * @throws SignatureException
+     */
     @Override
     public int getUserIdFromSessionKey(String sessionKey) throws SignatureException {
         String payload = TokenParser.parser()
@@ -39,6 +55,11 @@ public class TokenSessionKeyService implements SessionKeyService {
         return Integer.parseInt(payloadParts[0]);
     }
 
+    /**
+     * @param sessionKey
+     * @return
+     * @throws SignatureException
+     */
     @Override
     public boolean isSessionKeyValid(String sessionKey) throws SignatureException {
         return !isSessionKeyExpired(sessionKey);
