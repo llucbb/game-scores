@@ -9,15 +9,9 @@ public class ScoresServiceTest {
 
     private ScoresService scoresService;
 
-    private static class TestScoresService extends SingletonScoresService {
-        public TestScoresService(int maxNumber) {
-            super(maxNumber);
-        }
-    }
-
     @Before
     public void setUp() {
-        scoresService = new TestScoresService(5);
+        scoresService = new SingletonScoresService(5);
     }
 
     @Test
