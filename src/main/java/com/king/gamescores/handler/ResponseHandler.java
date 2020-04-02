@@ -8,18 +8,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public final class ResponseHandler implements HttpHandler {
+public class ResponseHandler implements HttpHandler {
 
-    private final int status;
+    private final int responseCode;
 
     private String body = "";
 
-    private ResponseHandler(int status) {
-        this.status = status;
+    private ResponseHandler(int responseCode) {
+        this.responseCode = responseCode;
     }
 
-    public static ResponseHandler status(int status) {
-        return new ResponseHandler(status);
+    public static ResponseHandler code(int responseCode) {
+        return new ResponseHandler(responseCode);
     }
 
     public ResponseHandler response(String body) {
@@ -33,7 +33,7 @@ public final class ResponseHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         Headers headers = exchange.getResponseHeaders();
         headers.set("Content-Type", "text/plain; charset=utf-8");
-        exchange.sendResponseHeaders(status, body.length());
+        exchange.sendResponseHeaders(responseCode, body.length());
         try (OutputStream out = exchange.getResponseBody()) {
             out.write(body.getBytes(StandardCharsets.UTF_8));
         }

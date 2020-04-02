@@ -14,7 +14,7 @@ import static java.net.HttpURLConnection.*;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
-public final class LoginHandler implements HttpHandler {
+public class LoginHandler implements HttpHandler {
 
     private static final Logger LOG = Logger.getLogger(LoginHandler.class.getName());
 
@@ -39,15 +39,15 @@ public final class LoginHandler implements HttpHandler {
             try {
                 String token = sessionKeyService.generateSessionKey(Integer.parseInt(userId));
                 LOG.log(INFO, "Token successfully generated");
-                ResponseHandler.status(HTTP_OK).response(token).handle(exchange);
+                ResponseHandler.code(HTTP_OK).response(token).handle(exchange);
 
             } catch (SignatureException e) {
                 LOG.log(SEVERE, e.getMessage(), e);
-                ResponseHandler.status(HTTP_INTERNAL_ERROR).handle(exchange);
+                ResponseHandler.code(HTTP_INTERNAL_ERROR).handle(exchange);
             }
 
         } else {
-            ResponseHandler.status(HTTP_BAD_REQUEST).handle(exchange);
+            ResponseHandler.code(HTTP_BAD_REQUEST).handle(exchange);
         }
     }
 }

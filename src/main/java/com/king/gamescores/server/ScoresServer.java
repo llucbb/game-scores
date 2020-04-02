@@ -13,7 +13,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import static com.king.gamescores.handler.HttpStatus.BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.util.logging.Level.CONFIG;
 import static java.util.logging.Level.SEVERE;
 
 public class ScoresServer {
@@ -22,65 +23,92 @@ public class ScoresServer {
 
     private static final int DEFAULT_WORKERS = Runtime.getRuntime().availableProcessors() - 1;
 
+    private HttpServer httpServer;
+    private ExecutorService executor;
+
+    private LoginHandler loginHandler;
+    private ScoreHandler scoreHandler;
+    private HighScoreHandler highScoreHandler;
+
     private ScoresServer(int port) throws IOException {
+        this.loginHandler = new LoginHandler();
+        this.scoreHandler = new ScoreHandler();
+        this.highScoreHandler = new HighScoreHandler();
         startServer(port, DEFAULT_WORKERS);
     }
 
     private ScoresServer(int port, int workers) throws IOException {
+        this.loginHandler = null;
+        this.scoreHandler = null;
+        this.highScoreHandler = null;
         startServer(port, workers);
     }
 
-    public static void start(int port) throws IOException {
-        new ScoresServer(port);
+    public static ScoresServer start(int port) throws IOException {
+        return new ScoresServer(port);
     }
 
-    public static void start(int port, int workers) throws IOException {
-        new ScoresServer(port, workers);
+    public static ScoresServer start(int port, int workers) throws IOException {
+        return new ScoresServer(port, workers);
+    }
+
+    public ScoresServer loginHandler(LoginHandler loginHandler) {
+        this.loginHandler = loginHandler;
+        return this;
+    }
+
+    public ScoresServer scoreHandler(ScoreHandler scoreHandler) {
+        this.scoreHandler = scoreHandler;
+        return this;
+    }
+
+    public ScoresServer highScoreHandler(HighScoreHandler highScoreHandler) {
+        this.highScoreHandler = highScoreHandler;
+        return this;
     }
 
     private void startServer(int port, int workers) throws IOException {
         boolean started = false;
-        ExecutorService executor = Executors.newFixedThreadPool(workers);
+        executor = Executors.newFixedThreadPool(workers);
         try {
-            HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 0);
+            httpServer = HttpServer.create(new InetSocketAddress(port), 0);
             httpServer.createContext("/", this::handle);
             httpServer.setExecutor(executor);
             httpServer.start();
             started = true;
-            LOG.info("Server started");
+            LOG.log(CONFIG, "Server started");
         } catch (IOException e) {
             LOG.log(SEVERE, e.getMessage(), e);
             throw e;
         } finally {
             if (!started) {
                 executor.shutdownNow();
-                LOG.warning("Server stopped");
             }
         }
     }
 
-    private void handle(HttpExchange exchange) throws IOException {
-        try {
-            String path = exchange.getRequestURI().getPath();
-            String[] paths = path.split("/");
-            if (paths.length == 3) {
-                String endpoint = paths[2];
-                if (endpoint.equals("login")) {
-                    new LoginHandler().handle(exchange);
-                    return;
-                } else if (endpoint.startsWith("score")) {
-                    new ScoreHandler().handle(exchange);
-                    return;
-                } else if (endpoint.equals("highscorelist")) {
-                    new HighScoreHandler().handle(exchange);
-                    return;
-                }
-            }
-            ResponseHandler.status(BAD_REQUEST).handle(exchange);
+    public void stopServer(int delay) {
+        executor.shutdownNow();
+        httpServer.stop(delay);
+        LOG.log(CONFIG, "Server stopped");
+    }
 
-        } catch (IOException e) {
-            LOG.log(SEVERE, e.getMessage(), e);
-            throw e;
+    private void handle(HttpExchange exchange) throws IOException {
+        String path = exchange.getRequestURI().getPath();
+        String[] paths = path.split("/");
+        if (paths.length == 3) {
+            String endpoint = paths[2];
+            if (endpoint.equals("login")) {
+                loginHandler.handle(exchange);
+                return;
+            } else if (endpoint.startsWith("score")) {
+                scoreHandler.handle(exchange);
+                return;
+            } else if (endpoint.equals("highscorelist")) {
+                highScoreHandler.handle(exchange);
+                return;
+            }
         }
+        ResponseHandler.code(HTTP_BAD_REQUEST).handle(exchange);
     }
 }

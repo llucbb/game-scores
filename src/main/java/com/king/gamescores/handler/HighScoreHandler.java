@@ -12,7 +12,7 @@ import static com.king.gamescores.util.ParamsValidator.isNumeric;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
 
-public final class HighScoreHandler implements HttpHandler {
+public class HighScoreHandler implements HttpHandler {
 
     private static final Logger LOG = Logger.getLogger(HighScoreHandler.class.getName());
 
@@ -20,6 +20,10 @@ public final class HighScoreHandler implements HttpHandler {
 
     public HighScoreHandler() {
         scoresService = SingletonScoresService.getInstance();
+    }
+
+    public HighScoreHandler(ScoresService scoresService) {
+        this.scoresService = scoresService;
     }
 
     @Override
@@ -35,10 +39,10 @@ public final class HighScoreHandler implements HttpHandler {
             String result = scoresService.getHighScoresForLevel(level);
 
             LOG.info(String.format("High score list %s has been successfully retrieved", result));
-            ResponseHandler.status(HTTP_OK).response(result).handle(exchange);
+            ResponseHandler.code(HTTP_OK).response(result).handle(exchange);
 
         } else {
-            ResponseHandler.status(HTTP_BAD_REQUEST).handle(exchange);
+            ResponseHandler.code(HTTP_BAD_REQUEST).handle(exchange);
         }
     }
 }
