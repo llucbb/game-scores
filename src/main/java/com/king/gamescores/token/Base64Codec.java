@@ -3,7 +3,13 @@ package com.king.gamescores.token;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 
-public class Base64Codec {
+/**
+ * Utility class for Base64 encoding and decoding
+ */
+public final class Base64Codec {
+
+    private Base64Codec() {
+    }
 
     public static String encode(byte[] data) {
         String base64Text = DatatypeConverter.printBase64Binary(data);

@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- *
+ * Generates a token, a compact and self-contained way to securely generate the required unique session key. Contains a
+ * payload and a signature. The payload contains the userId and when expires. Finally, the signature is the hash of the
+ * the payload using the hash algorithm, which can be verified and trusted because it is digitally signed.
  */
 public class TokenSessionKeyService implements SessionKeyService {
 
@@ -21,15 +23,19 @@ public class TokenSessionKeyService implements SessionKeyService {
     }
 
     /**
-     * @param secretKey
+     * Constructs a {@link TokenSessionKeyService} with the given secretKey
+     *
+     * @param secretKey the secret key
      */
     public TokenSessionKeyService(String secretKey) {
         this.secretKey = secretKey;
     }
 
     /**
-     * @param userId
-     * @return
+     * Generate the unique session key, a token in the form of a string.
+     *
+     * @param userId The user identifier
+     * @return The session key in string format
      * @throws SignatureException
      */
     @Override
@@ -42,7 +48,10 @@ public class TokenSessionKeyService implements SessionKeyService {
     }
 
     /**
-     * @param sessionKey
+     * Retrieve userId for the given session key. Will be referenced with the score provided when adding scores per
+     * level.
+     *
+     * @param sessionKey The session key in string format
      * @return
      * @throws SignatureException
      */
@@ -56,8 +65,10 @@ public class TokenSessionKeyService implements SessionKeyService {
     }
 
     /**
-     * @param sessionKey
-     * @return
+     * Checks the expiration of the given session key.
+     *
+     * @param sessionKey The session key in string format
+     * @return true if the session key is valid, false otherwise
      * @throws SignatureException
      */
     @Override

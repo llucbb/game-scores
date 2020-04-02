@@ -1,7 +1,7 @@
 package com.king.gamescores.util;
 
 /**
- *
+ * Utility class for Strings
  */
 public final class Strings {
 
@@ -16,7 +16,7 @@ public final class Strings {
         return str;
     }
 
-    public static CharSequence trimWhitespace(CharSequence str) {
+    private static CharSequence trimWhitespace(CharSequence str) {
         if (!isNotEmpty(str)) {
             return str;
         }
