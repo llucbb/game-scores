@@ -18,5 +18,5 @@ Execution:
 java -jar game-scores.jar
 
 Ensure the user executing the jar has write access to the folder where the jar is located to avoid issues. A log
-will be displayed in the console and a game-scores-log will be created in the same location. This configuration could be
+will be displayed in the console and a game-scores.log will be created in the same location. This configuration could be
 changed at com.king.gamescores.log.ScoresLogger.java class.

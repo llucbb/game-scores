@@ -67,7 +67,7 @@ public class TokenParser {
         }
 
         if (delimiterCount != 1) {
-            throw new IllegalStateException("Token must contain exactly 1 separator characters. Found: " + delimiterCount);
+            throw new SignatureException("Token must contain exactly 1 separator characters. Found: " + delimiterCount);
         }
 
         if (sb.length() > 0) {
@@ -75,7 +75,7 @@ public class TokenParser {
         }
 
         if (base64Payload == null) {
-            throw new IllegalStateException("Token does not have a payload");
+            throw new SignatureException("Token does not have a payload");
         }
 
         // Payload
