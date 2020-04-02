@@ -2,6 +2,7 @@ package com.king.gamescores.handler;
 
 import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SingletonScoresService;
+import com.king.gamescores.util.Strings;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -38,7 +39,12 @@ public class HighScoreHandler implements HttpHandler {
             int level = Integer.parseInt(levelStr);
             String result = scoresService.getHighScoresForLevel(level);
 
-            LOG.info(String.format("High score list %s has been successfully retrieved", result));
+            if (Strings.isNotEmpty(result)) {
+                LOG.info(String.format("High score list '%s' has been retrieved for level %d", result,
+                        level));
+            } else {
+                LOG.warning(String.format("High score list empty has been retrieved for level %d", level));
+            }
             ResponseHandler.code(HTTP_OK).response(result).handle(exchange);
 
         } else {

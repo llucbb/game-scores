@@ -4,8 +4,9 @@ import com.king.gamescores.util.Strings;
 
 import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINEST;
 
 public class TokenParser {
 
@@ -70,7 +71,7 @@ public class TokenParser {
                 throw new SignatureException(msg);
             }
         }
-        LOG.log(Level.CONFIG, "payload: " + payload);
+        LOG.log(FINEST, "payload: " + payload);
         return payload;
     }
 }

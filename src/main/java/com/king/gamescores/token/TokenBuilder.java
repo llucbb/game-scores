@@ -6,8 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINEST;
 
 public class TokenBuilder {
 
@@ -57,7 +58,7 @@ public class TokenBuilder {
         String signature = Base64Codec.encode(sign);
 
         String token = body + SEPARATOR_CHAR + signature;
-        LOG.log(Level.CONFIG, "token: " + token);
+        LOG.log(FINEST, "token: " + token);
         return token;
     }
 }
