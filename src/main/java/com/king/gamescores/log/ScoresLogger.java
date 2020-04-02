@@ -19,7 +19,7 @@ public final class ScoresLogger {
 
         Logger.getLogger("com.sun.net.httpserver").setLevel(Level.OFF);
 
-        ScoresFormatter logFormatter = new ScoresFormatter();
+        ScoresLoggerFormatter logFormatter = new ScoresLoggerFormatter();
 
         // Create a logger console handler
         ConsoleHandler ch = new ConsoleHandler();

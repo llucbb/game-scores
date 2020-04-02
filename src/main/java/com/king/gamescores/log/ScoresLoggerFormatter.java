@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-public class ScoresFormatter extends Formatter {
+public class ScoresLoggerFormatter extends Formatter {
 
     private static final String FORMAT = "%1$tF %1$tT.%1$tL %2$-7s %3$-50s : %4$s %n";
 
