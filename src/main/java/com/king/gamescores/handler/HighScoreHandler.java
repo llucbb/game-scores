@@ -8,9 +8,9 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import static com.king.gamescores.handler.HttpStatus.BAD_REQUEST;
-import static com.king.gamescores.handler.HttpStatus.OK;
 import static com.king.gamescores.util.ParamsValidator.isNumeric;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public final class HighScoreHandler implements HttpHandler {
 
@@ -35,10 +35,10 @@ public final class HighScoreHandler implements HttpHandler {
             String result = scoresService.getHighScoresForLevel(level);
 
             LOG.info(String.format("High score list %s has been successfully retrieved", result));
-            ResponseHandler.status(OK).response(result).handle(exchange);
+            ResponseHandler.status(HTTP_OK).response(result).handle(exchange);
 
         } else {
-            ResponseHandler.status(BAD_REQUEST).handle(exchange);
+            ResponseHandler.status(HTTP_BAD_REQUEST).handle(exchange);
         }
     }
 }

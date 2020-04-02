@@ -15,8 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.util.logging.Logger;
 
-import static com.king.gamescores.handler.HttpStatus.*;
 import static com.king.gamescores.util.ParamsValidator.*;
+import static java.net.HttpURLConnection.*;
 import static java.util.logging.Level.SEVERE;
 
 public final class ScoreHandler implements HttpHandler {
@@ -65,7 +65,7 @@ public final class ScoreHandler implements HttpHandler {
 
             } catch (SignatureException e) {
                 LOG.log(SEVERE, SESSION_KEY + " is not valid", e);
-                ResponseHandler.status(UNAUTHORIZED).handle(exchange);
+                ResponseHandler.status(HTTP_UNAUTHORIZED).handle(exchange);
                 return;
             }
 
@@ -79,20 +79,20 @@ public final class ScoreHandler implements HttpHandler {
 
                     LOG.info(String.format("Score %d successfully registered for userid %d at level %d",
                             score, userId, level));
-                    ResponseHandler.status(OK).handle(exchange);
+                    ResponseHandler.status(HTTP_OK).handle(exchange);
 
                 } else {
                     LOG.log(SEVERE, SESSION_KEY + " has been expired");
-                    ResponseHandler.status(UNAUTHORIZED).handle(exchange);
+                    ResponseHandler.status(HTTP_UNAUTHORIZED).handle(exchange);
                 }
 
             } catch (SignatureException e) {
                 LOG.log(SEVERE, e.getMessage(), e);
-                ResponseHandler.status(UNAUTHORIZED).handle(exchange);
+                ResponseHandler.status(HTTP_UNAUTHORIZED).handle(exchange);
             }
 
         } else {
-            ResponseHandler.status(BAD_REQUEST).handle(exchange);
+            ResponseHandler.status(HTTP_BAD_REQUEST).handle(exchange);
         }
     }
 }

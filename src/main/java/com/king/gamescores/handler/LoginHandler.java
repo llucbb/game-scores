@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.logging.Logger;
 
-import static com.king.gamescores.handler.HttpStatus.*;
 import static com.king.gamescores.util.ParamsValidator.isNumeric;
+import static java.net.HttpURLConnection.*;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
@@ -39,15 +39,15 @@ public final class LoginHandler implements HttpHandler {
             try {
                 String token = sessionKeyService.generateSessionKey(Integer.parseInt(userId));
                 LOG.log(INFO, "Token successfully generated");
-                ResponseHandler.status(OK).response(token).handle(exchange);
+                ResponseHandler.status(HTTP_OK).response(token).handle(exchange);
 
             } catch (SignatureException e) {
                 LOG.log(SEVERE, e.getMessage(), e);
-                ResponseHandler.status(INTERNAL_SERVER_ERROR).handle(exchange);
+                ResponseHandler.status(HTTP_INTERNAL_ERROR).handle(exchange);
             }
 
         } else {
-            ResponseHandler.status(BAD_REQUEST).handle(exchange);
+            ResponseHandler.status(HTTP_BAD_REQUEST).handle(exchange);
         }
     }
 }

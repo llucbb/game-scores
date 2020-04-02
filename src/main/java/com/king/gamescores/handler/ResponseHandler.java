@@ -10,16 +10,16 @@ import java.nio.charset.StandardCharsets;
 
 public final class ResponseHandler implements HttpHandler {
 
-    private final HttpStatus httpStatus;
+    private final int status;
 
     private String body = "";
 
-    private ResponseHandler(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
+    private ResponseHandler(int status) {
+        this.status = status;
     }
 
-    public static ResponseHandler status(HttpStatus httpStatus) {
-        return new ResponseHandler(httpStatus);
+    public static ResponseHandler status(int status) {
+        return new ResponseHandler(status);
     }
 
     public ResponseHandler response(String body) {
@@ -33,7 +33,7 @@ public final class ResponseHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         Headers headers = exchange.getResponseHeaders();
         headers.set("Content-Type", "text/plain; charset=utf-8");
-        exchange.sendResponseHeaders(httpStatus.value(), body.length());
+        exchange.sendResponseHeaders(status, body.length());
         try (OutputStream out = exchange.getResponseBody()) {
             out.write(body.getBytes(StandardCharsets.UTF_8));
         }
