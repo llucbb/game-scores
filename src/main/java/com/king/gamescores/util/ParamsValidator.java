@@ -8,8 +8,9 @@ public final class ParamsValidator {
 
     private static final Logger LOG = Logger.getLogger(ParamsValidator.class.getName());
 
+    public static final String SESSION_KEY = "sessionkey";
+
     private static final String ERR_IS_NOT_NUMERIC = "'%s' must be a 31 bit unsigned integer number";
-    private static final String SESSION_KEY = "sessionkey";
     private static final String ERR_SESSION_KEY_NOT_PROVIDED = SESSION_KEY + " has not been provided";
 
     private ParamsValidator() {

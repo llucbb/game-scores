@@ -16,8 +16,7 @@ import java.security.SignatureException;
 import java.util.logging.Logger;
 
 import static com.king.gamescores.handler.HttpStatus.*;
-import static com.king.gamescores.util.ParamsValidator.isNumeric;
-import static com.king.gamescores.util.ParamsValidator.isSessionKeyProvided;
+import static com.king.gamescores.util.ParamsValidator.*;
 import static java.util.logging.Level.SEVERE;
 
 public final class ScoreHandler implements HttpHandler {
@@ -65,14 +64,14 @@ public final class ScoreHandler implements HttpHandler {
                 userId = sessionKeyService.getUserIdFromSessionKey(sessionKey);
 
             } catch (SignatureException e) {
-                LOG.log(SEVERE, "sessionkey is not valid", e);
+                LOG.log(SEVERE, SESSION_KEY + " is not valid", e);
                 ResponseHandler.status(UNAUTHORIZED).handle(exchange);
                 return;
             }
 
             try {
                 if (sessionKeyService.isSessionKeyValid(sessionKey)) {
-                    LOG.info("sessionkey successfully validated");
+                    LOG.info(SESSION_KEY + " successfully validated");
 
                     int level = Integer.parseInt(levelStr);
                     int score = Integer.parseInt(scoreStr);
@@ -83,7 +82,7 @@ public final class ScoreHandler implements HttpHandler {
                     ResponseHandler.status(OK).handle(exchange);
 
                 } else {
-                    LOG.log(SEVERE, "sessionkey has been expired");
+                    LOG.log(SEVERE, SESSION_KEY + " has been expired");
                     ResponseHandler.status(UNAUTHORIZED).handle(exchange);
                 }
 
