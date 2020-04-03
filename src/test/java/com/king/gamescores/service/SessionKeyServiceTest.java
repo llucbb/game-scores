@@ -31,14 +31,14 @@ public class SessionKeyServiceTest {
         sessionKeyService.getUserIdFromSessionKey(sessionKey);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = SignatureException.class)
     public void getUserIdFromWithoutPayloadSessionKeyShouldFail() throws SignatureException {
         String sessionKey = String.format("%sfsfsdfsfpj342kn2nmfsn2", SEPARATOR_CHAR);
 
         sessionKeyService.getUserIdFromSessionKey(sessionKey);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = SignatureException.class)
     public void getUserIdFromMoreThanOneSeparatorSessionKeyShouldFail() throws SignatureException {
         String sessionKey = String.format("fsf%ssdfsfpj342%skn2nmfsn2", SEPARATOR_CHAR, SEPARATOR_CHAR);
 
