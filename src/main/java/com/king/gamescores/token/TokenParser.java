@@ -84,7 +84,7 @@ public class TokenParser {
         // Signature
         if (base64Digest != null) {
             if (keyBytes == null || keyBytes.length == 0) {
-                throw new IllegalStateException("Secret key is mandatory");
+                throw new SignatureException("Secret key is mandatory");
             }
 
             Signer signer = new Signer(keyBytes);

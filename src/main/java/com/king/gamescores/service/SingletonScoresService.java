@@ -1,10 +1,13 @@
 package com.king.gamescores.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * The non-functional requirement to no persistence to disk forces me to create a thread-safe singleton with lazy
@@ -16,7 +19,7 @@ public class SingletonScoresService implements ScoresService {
 
     private static SingletonScoresService instance = null;
 
-    protected final Map<Integer, Map<Integer, Integer>> scores;
+    private ConcurrentMap<Integer, ConcurrentMap<Integer, Integer>> scores;
     protected final int maxNumber;
 
     /**
@@ -78,22 +81,23 @@ public class SingletonScoresService implements ScoresService {
      */
     @Override
     public void registerScore(int level, int userId, int score) {
-        Map<Integer, Integer> scoreMap = scores.get(level);
+        ConcurrentMap<Integer, Integer> scoreMap = scores.get(level);
         if (scoreMap != null) {
-            if (scoreMap.size() >= maxNumber) {
-                // Because of memory reasons no more than maxNumber scores are to be registered for each level. Find
-                // the minimum score and remove it
-                Map.Entry<Integer, Integer> min = scoreMap.entrySet().stream()
-                        .min(Map.Entry.comparingByValue(Integer::compareTo)).get();
-                scoreMap.remove(min.getKey());
-            }
             Integer currentScore = scoreMap.get(userId);
-            if (currentScore != null) {
-                if (score > currentScore) {
-                    // Store only the highest user score
-                    scoreMap.put(userId, score);
+            if (scoreMap.size() >= maxNumber) {
+                if (currentScore == null || currentScore.compareTo(score) < 0) {
+                    Map.Entry<Integer, Integer> min = scoreMap.entrySet().stream()
+                            .min(Map.Entry.comparingByValue(Integer::compareTo)).get();
+                    if (min.getValue().compareTo(score) < 0) {
+                        if (currentScore == null) {
+                            scoreMap.remove(min.getKey());
+                        }
+                        scoreMap.put(userId, score);
+                    }
                 }
-            } else {
+            } else if (currentScore != null && currentScore.compareTo(score) < 0) {
+                scoreMap.put(userId, score);
+            } else if (currentScore == null) {
                 scoreMap.put(userId, score);
             }
         } else {
@@ -114,23 +118,21 @@ public class SingletonScoresService implements ScoresService {
      */
     @Override
     public String getHighScoresForLevel(int level) {
-        // key=score, value=userId in reverse order (highest scores first) as the result must be a comma separated
-        // list in descending score order
-        SortedMap<Integer, Integer> highestScores = new TreeMap<>(Collections.reverseOrder());
+        Map<Integer, Integer> highestScores;
         // Retrieve the key=userId, value=score per level
         Map<Integer, Integer> scoreMap = scores.get(level);
         if (scoreMap != null) {
-            scoreMap.forEach((key, value) -> highestScores.put(value, key));
+            highestScores = scoreMap.entrySet().stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                            LinkedHashMap::new));
+        } else {
+            highestScores = new LinkedHashMap<>();
         }
-        // build CSV of <userid>=<score>
-        StringBuilder sb = new StringBuilder();
-        highestScores.forEach((key, value) ->
-                // Note that here we are switching the value(userid) and the key(score)
-                sb.append(String.format("%s=%s,", value, key))
-        );
-        String result = sb.toString();
-        // remove the last comma if applies
-        return result.length() > 0 ? result.substring(0, result.length() - 1) : result;
-    }
 
+        // build CSV of <userid>=<score>
+        List<String> results = new ArrayList<>(highestScores.size());
+        highestScores.forEach((k, v) -> results.add(String.format("%s=%s", k, v)));
+        return String.join(",", results);
+    }
 }
