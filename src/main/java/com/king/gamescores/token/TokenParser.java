@@ -50,7 +50,7 @@ public class TokenParser {
         String base64Payload = null;
         String base64Digest = null;
         int delimiterCount = 0;
-        StringBuilder sb = new StringBuilder(128);
+        StringBuilder sb = new StringBuilder(121);
         char[] arr = token.toCharArray();
         for (char c : arr) {
             if (c == SEPARATOR_CHAR) {

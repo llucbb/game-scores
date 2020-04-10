@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -19,14 +18,14 @@ public class SingletonScoresService implements ScoresService {
 
     private static SingletonScoresService instance = null;
 
-    private ConcurrentMap<Integer, ConcurrentMap<Integer, Integer>> scores;
+    private final ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Integer>> scoresByLevel;
     protected final int maxNumber;
 
     /**
      * Constructs a {@link SingletonScoresService} with the default maximum number of scores per level
      */
     private SingletonScoresService() {
-        scores = new ConcurrentHashMap<>();
+        scoresByLevel = new ConcurrentHashMap<>();
         maxNumber = DEFAULT_MAX_NUMBER;
     }
 
@@ -37,7 +36,7 @@ public class SingletonScoresService implements ScoresService {
      * @param maxNumber maximum number of scores per level
      */
     protected SingletonScoresService(int maxNumber) {
-        scores = new ConcurrentHashMap<>();
+        scoresByLevel = new ConcurrentHashMap<>();
         this.maxNumber = maxNumber;
     }
 
@@ -71,66 +70,65 @@ public class SingletonScoresService implements ScoresService {
     }
 
     /**
-     * Registers a user's score to a level. Because of memory reasons no more than maxNumber scores are to be registered
-     * for each level. The data structures are hash tables supporting full concurrency of retrievals and high expected
-     * concurrency for updates.
+     * Registers a user's scoreValue to a level. Because of memory reasons no more than maxNumber scores are to be
+     * registered for each level. The data structures are hash tables supporting full concurrency of retrievals and high
+     * expected concurrency for updates.
      *
-     * @param level  level of the score to register, 31 bit unsigned integer number
-     * @param userId userId of the score to register, 31 bit unsigned integer number
-     * @param score  score to register, 31 bit unsigned integer number
+     * @param level      level of the scoreValue to register, 31 bit unsigned integer number
+     * @param userId     userId of the scoreValue to register, 31 bit unsigned integer number
+     * @param scoreValue scoreValue to register, 31 bit unsigned integer number
      */
     @Override
-    public void registerScore(int level, int userId, int score) {
-        ConcurrentMap<Integer, Integer> scoreMap = scores.get(level);
-        if (scoreMap != null) {
-            Integer currentScore = scoreMap.get(userId);
-            if (scoreMap.size() >= maxNumber) {
-                if (currentScore == null || currentScore.compareTo(score) < 0) {
-                    Map.Entry<Integer, Integer> min = scoreMap.entrySet().stream()
+    public void registerScore(int level, int userId, int scoreValue) {
+        ConcurrentHashMap<Integer, Integer> scores = scoresByLevel.putIfAbsent(level,
+                new ConcurrentHashMap<>(maxNumber));
+        if (scores != null) {
+            Integer currentScore = scores.get(userId);
+            if (scores.size() >= maxNumber) {
+                if (currentScore == null || currentScore.compareTo(scoreValue) < 0) {
+                    Map.Entry<Integer, Integer> min = scores.entrySet().stream()
                             .min(Map.Entry.comparingByValue(Integer::compareTo)).get();
-                    if (min.getValue().compareTo(score) < 0) {
+                    if (min.getValue().compareTo(scoreValue) < 0) {
                         if (currentScore == null) {
-                            scoreMap.remove(min.getKey());
+                            scores.remove(min.getKey());
                         }
-                        scoreMap.put(userId, score);
+                        scores.put(userId, scoreValue);
                     }
                 }
-            } else if (currentScore != null && currentScore.compareTo(score) < 0) {
-                scoreMap.put(userId, score);
+            } else if (currentScore != null && currentScore.compareTo(scoreValue) < 0) {
+                scores.put(userId, scoreValue);
             } else if (currentScore == null) {
-                scoreMap.put(userId, score);
+                scores.put(userId, scoreValue);
             }
         } else {
-            scoreMap = new ConcurrentHashMap<>(maxNumber);
-            scoreMap.put(userId, score);
-            scores.put(level, scoreMap);
+            scores = new ConcurrentHashMap<>(maxNumber);
+            scores.put(userId, scoreValue);
+            scoresByLevel.put(level, scores);
         }
     }
 
     /**
-     * Retrieves the high scores for a specific level. The result is a comma separated list in descending score order.
-     * Only the highest score counts. ie: an userId can only appear at most once in the list. If a user hasn't submitted
-     * a score for the level, no score is present for that user. A request for a high score list of a level without any
-     * scores submitted will be an empty string.
+     * Retrieves the high scores for a specific level. The result is a comma separated list in descending scoreValue
+     * order. Only the highest scoreValue counts. ie: an userId can only appear at most once in the list. If a user
+     * hasn't submitted a scoreValue for the level, no scoreValue is present for that user. A request for a high
+     * scoreValue list of a level without any scores submitted will be an empty string.
      *
      * @param level 31 bit unsigned integer number
-     * @return CSV of <userid>=<score>
+     * @return CSV of <userid>=<scoreValue>
      */
     @Override
     public String getHighScoresForLevel(int level) {
-        Map<Integer, Integer> highestScores;
+        Map<Integer, Integer> highestScores = new LinkedHashMap<>();
         // Retrieve the key=userId, value=score per level
-        Map<Integer, Integer> scoreMap = scores.get(level);
+        Map<Integer, Integer> scoreMap = scoresByLevel.get(level);
         if (scoreMap != null) {
             highestScores = scoreMap.entrySet().stream()
                     .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                             LinkedHashMap::new));
-        } else {
-            highestScores = new LinkedHashMap<>();
         }
 
-        // build CSV of <userid>=<score>
+        // build CSV of <userid>=<scoreValue>
         List<String> results = new ArrayList<>(highestScores.size());
         highestScores.forEach((k, v) -> results.add(String.format("%s=%s", k, v)));
         return String.join(",", results);
