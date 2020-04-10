@@ -9,10 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-/**
- * The non-functional requirement to no persistence to disk forces me to create a thread-safe singleton with lazy
- * initialization with double check locking.
- */
 public class DefaultScoresService implements ScoresService {
 
     protected static final int DEFAULT_MAX_NUMBER = 15;
