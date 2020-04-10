@@ -140,4 +140,26 @@ public class ScoresServiceTest {
         Assert.assertEquals(expectedResult, result);
     }
 
+    @Test
+    public void registerMoreThanMaxScores6() {
+        int level = 1;
+        scoresService.registerScore(level, 6, 5);
+        scoresService.registerScore(level, 5, 6);
+        scoresService.registerScore(level, 4, 7);
+        scoresService.registerScore(level, 3, 8);
+        scoresService.registerScore(level, 2, 9);
+        scoresService.registerScore(level, 1, 10);
+        scoresService.registerScore(level, 1, 11);
+        scoresService.registerScore(level, 2, 10);
+        scoresService.registerScore(level, 3, 9);
+        scoresService.registerScore(level, 4, 8);
+        scoresService.registerScore(level, 5, 7);
+        scoresService.registerScore(level, 6, 6);
+        String expectedResult = "1=11,2=10,3=9,4=8,5=7";
+
+        String result = scoresService.getHighScoresForLevel(level);
+
+        Assert.assertEquals(expectedResult, result);
+    }
+
 }
