@@ -11,12 +11,12 @@ public class SingletonScoresService extends DefaultScoresService {
 
     private static SingletonScoresService instance = null;
 
-    protected SingletonScoresService() {
+    private SingletonScoresService() {
         super();
         scoresByLevel = new ConcurrentHashMap<>();
     }
 
-    protected SingletonScoresService(int maxNumber) {
+    private SingletonScoresService(int maxNumber) {
         super(maxNumber);
         scoresByLevel = new ConcurrentHashMap<>();
     }

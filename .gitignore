@@ -1,7 +1,7 @@
 out/
 
 ### Java Logging
-*.log
+*.log*
 *.lck
 
 ### IntelliJ IDEA ###
