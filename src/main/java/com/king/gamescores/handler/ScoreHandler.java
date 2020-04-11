@@ -1,7 +1,6 @@
 package com.king.gamescores.handler;
 
 import com.king.gamescores.filter.ParameterFilter;
-import com.king.gamescores.server.HttpMethod;
 import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SessionKeyService;
 import com.king.gamescores.service.SingletonScoresService;
@@ -15,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static com.king.gamescores.filter.ParameterFilter.SCORE_PARAM;
+import static com.king.gamescores.server.HttpMethod.POST;
 import static com.king.gamescores.util.HttpMethodValidator.isMethodValid;
 import static com.king.gamescores.util.ParamsValidator.*;
 import static java.net.HttpURLConnection.*;
@@ -40,7 +40,7 @@ public class ScoreHandler implements HttpHandler {
     @Override
     @SuppressWarnings("unchecked")
     public void handle(HttpExchange exchange) throws IOException {
-        if (!isMethodValid(HttpMethod.POST, exchange)) return;
+        if (!isMethodValid(POST, exchange)) return;
 
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
