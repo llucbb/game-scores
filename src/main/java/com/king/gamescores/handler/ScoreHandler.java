@@ -33,9 +33,9 @@ public class ScoreHandler implements HttpHandler {
         scoresService = SingletonScoresService.getInstance();
     }
 
-    public ScoreHandler(SessionKeyService sessionKeyService) {
+    public ScoreHandler(SessionKeyService sessionKeyService, ScoresService scoresService) {
         this.sessionKeyService = sessionKeyService;
-        scoresService = new DefaultScoresService();
+        this.scoresService = scoresService;
     }
 
     @Override

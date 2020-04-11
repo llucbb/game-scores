@@ -4,6 +4,7 @@ import com.king.gamescores.handler.HighScoreHandler;
 import com.king.gamescores.handler.LoginHandler;
 import com.king.gamescores.handler.ScoreHandler;
 import com.king.gamescores.log.ScoresLogger;
+import com.king.gamescores.service.DefaultScoresService;
 import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SessionKeyService;
 import com.king.gamescores.util.Strings;
@@ -154,7 +155,8 @@ public class ScoresServerTest {
 
     @Test
     public void scoreNotPostMethodShouldFail() throws IOException {
-        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        scoresServer = ScoresServer.start(PORT, 1)
+                .scoreHandler(new ScoreHandler(sessionKeyService, new DefaultScoresService()));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey=%s"), EXPECTED_LEVEL, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(GET.toString());
@@ -169,7 +171,8 @@ public class ScoresServerTest {
 
     @Test
     public void scoreZeroLevelShouldFail() throws IOException {
-        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        scoresServer = ScoresServer.start(PORT, 1)
+                .scoreHandler(new ScoreHandler(sessionKeyService, new DefaultScoresService()));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey=%s"), 0, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(POST.toString());
@@ -185,7 +188,8 @@ public class ScoresServerTest {
 
     @Test
     public void scoreMissingSessionKeyShouldFail() throws IOException {
-        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        scoresServer = ScoresServer.start(PORT, 1)
+                .scoreHandler(new ScoreHandler(sessionKeyService, new DefaultScoresService()));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey="), EXPECTED_LEVEL));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(POST.toString());
@@ -201,7 +205,8 @@ public class ScoresServerTest {
 
     @Test
     public void scoreWrongSessionKeyParamNameShouldFail() throws IOException {
-        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        scoresServer = ScoresServer.start(PORT, 1)
+                .scoreHandler(new ScoreHandler(sessionKeyService, new DefaultScoresService()));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkeyWrong=%s"), EXPECTED_LEVEL,
                 EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -218,7 +223,8 @@ public class ScoresServerTest {
 
     @Test
     public void scoreIncorrectPathShouldFail() throws IOException {
-        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        scoresServer = ScoresServer.start(PORT, 1)
+                .scoreHandler(new ScoreHandler(sessionKeyService, new DefaultScoresService()));
         URL url = new URL(String.format(BASE_URL.concat("/%d/sco?sessionkey=%s"), EXPECTED_LEVEL, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(POST.toString());
@@ -234,7 +240,8 @@ public class ScoresServerTest {
 
     @Test
     public void scoreSuccessful() throws IOException {
-        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        scoresServer = ScoresServer.start(PORT, 1)
+                .scoreHandler(new ScoreHandler(sessionKeyService, new DefaultScoresService()));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey=%s"), EXPECTED_LEVEL, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(POST.toString());
