@@ -1,9 +1,11 @@
 package com.king.gamescores.server;
 
+import com.king.gamescores.filter.ParameterFilter;
 import com.king.gamescores.handler.HighScoreHandler;
 import com.king.gamescores.handler.LoginHandler;
 import com.king.gamescores.handler.ResponseHandler;
 import com.king.gamescores.handler.ScoreHandler;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -72,7 +74,8 @@ public class ScoresServer {
         executor = Executors.newFixedThreadPool(workers);
         try {
             httpServer = HttpServer.create(new InetSocketAddress(port), 0);
-            httpServer.createContext("/", this::handle);
+            HttpContext context = httpServer.createContext("/", this::handle);
+            context.getFilters().add(new ParameterFilter());
             httpServer.setExecutor(executor);
             httpServer.start();
             started = true;

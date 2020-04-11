@@ -33,11 +33,11 @@ public class LoginHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
 
-        String userId = paths[1];
-        if (isNumeric(userId)) {
+        String pUserId = paths[1];
+        if (isNumeric(pUserId)) {
 
             try {
-                String token = sessionKeyService.generateSessionKey(Integer.parseInt(userId));
+                String token = sessionKeyService.generateSessionKey(Integer.parseInt(pUserId));
                 LOG.log(INFO, "Token successfully generated");
                 ResponseHandler.code(HTTP_OK).response(token).handle(exchange);
 

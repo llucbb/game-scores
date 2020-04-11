@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.king.gamescores.server.HttpMethod.GET;
+import static com.king.gamescores.server.HttpMethod.POST;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.Assert.*;
@@ -37,9 +39,6 @@ public class ScoresServerTest {
         }
     }
 
-    private enum Method {
-        GET, POST
-    }
 
     private static final int PORT = 8080;
     private static final String BASE_URL = String.format("http://localhost:%d", PORT);
@@ -83,7 +82,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1);
         URL url = new URL(BASE_URL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -98,7 +97,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).loginHandler(new LoginHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%s/login"), "nonNumeric"));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -113,7 +112,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).loginHandler(new LoginHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/log"), EXPECTED_USER_ID));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -128,7 +127,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).loginHandler(new LoginHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/login"), EXPECTED_USER_ID));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -144,7 +143,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey=%s"), 0, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.POST.name());
+        conn.setRequestMethod(POST.toString());
         setRequestBody(conn, String.valueOf(EXPECTED_SCORE));
 
         conn.connect();
@@ -160,7 +159,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey="), EXPECTED_LEVEL));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.POST.name());
+        conn.setRequestMethod(POST.toString());
         setRequestBody(conn, String.valueOf(EXPECTED_SCORE));
 
         conn.connect();
@@ -177,7 +176,7 @@ public class ScoresServerTest {
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkeyWrong=%s"), EXPECTED_LEVEL,
                 EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.POST.name());
+        conn.setRequestMethod(POST.toString());
         setRequestBody(conn, String.valueOf(EXPECTED_SCORE));
 
         conn.connect();
@@ -193,7 +192,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/sco?sessionkey=%s"), EXPECTED_LEVEL, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.POST.name());
+        conn.setRequestMethod(POST.toString());
         setRequestBody(conn, String.valueOf(EXPECTED_SCORE));
 
         conn.connect();
@@ -209,7 +208,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey=%s"), EXPECTED_LEVEL, EXPECTED_TOKEN));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.POST.name());
+        conn.setRequestMethod(POST.toString());
         setRequestBody(conn, String.valueOf(EXPECTED_SCORE));
 
         conn.connect();
@@ -225,7 +224,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).highScoreHandler(new HighScoreHandler(scoresService));
         URL url = new URL(String.format(BASE_URL.concat("/%s/highscorelist"), "-2"));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -240,7 +239,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).highScoreHandler(new HighScoreHandler(scoresService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/highsco"), EXPECTED_LEVEL));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();
@@ -255,7 +254,7 @@ public class ScoresServerTest {
         scoresServer = ScoresServer.start(PORT, 1).highScoreHandler(new HighScoreHandler(scoresService));
         URL url = new URL(String.format(BASE_URL.concat("/%d/highscorelist"), EXPECTED_LEVEL));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(Method.GET.name());
+        conn.setRequestMethod(GET.toString());
 
         conn.connect();
         int responseCode = conn.getResponseCode();

@@ -1,5 +1,6 @@
 package com.king.gamescores.handler;
 
+import com.king.gamescores.filter.ParameterFilter;
 import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SessionKeyService;
 import com.king.gamescores.service.SingletonScoresService;
@@ -10,11 +11,14 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.king.gamescores.filter.ParameterFilter.SCORE_PARAM;
 import static com.king.gamescores.util.ParamsValidator.*;
 import static java.net.HttpURLConnection.*;
 import static java.util.logging.Level.SEVERE;
@@ -37,31 +41,23 @@ public class ScoreHandler implements HttpHandler {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
 
-        String levelStr = paths[1];
+        String pLevel = paths[1];
 
-        String sessionKeyParam = exchange.getRequestURI().getQuery();
-        String[] sessionKeyParams = sessionKeyParam != null ? sessionKeyParam.split("=") : null;
+        Map<String, Object> params = (Map<String, Object>) exchange.getAttribute(ParameterFilter.PARAMETERS);
+        String pScore = (String) params.getOrDefault(SCORE_PARAM, SCORE_PARAM);
+        String pSessionKey = (String) params.get(SESSION_KEY);
 
-        String scoreStr;
-        try (InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8)) {
-            BufferedReader br = new BufferedReader(isr);
-            scoreStr = br.readLine();
-        }
-        if (!Strings.isNotEmpty(scoreStr)) {
-            scoreStr = "score";
-        }
+        if (isNumeric(pLevel) && isSessionKeyProvided(pSessionKey) && isNumeric(pScore)) {
 
-        if (isNumeric(levelStr) && isSessionKeyProvided(sessionKeyParams) && isNumeric(scoreStr)) {
-
-            String sessionKey = sessionKeyParams[1];
             int userId;
             try {
 
-                userId = sessionKeyService.getUserIdFromSessionKey(sessionKey);
+                userId = sessionKeyService.getUserIdFromSessionKey(pSessionKey);
 
             } catch (SignatureException e) {
                 LOG.log(SEVERE, SESSION_KEY + " is not valid", e);
@@ -70,11 +66,11 @@ public class ScoreHandler implements HttpHandler {
             }
 
             try {
-                if (sessionKeyService.isSessionKeyValid(sessionKey)) {
+                if (sessionKeyService.isSessionKeyValid(pSessionKey)) {
                     LOG.info(SESSION_KEY + " successfully validated");
 
-                    int level = Integer.parseInt(levelStr);
-                    int score = Integer.parseInt(scoreStr);
+                    int level = Integer.parseInt(pLevel);
+                    int score = Integer.parseInt(pScore);
                     scoresService.registerScore(level, userId, score);
 
                     LOG.info(String.format("Score %d successfully registered for userid %d at level %d",
@@ -93,6 +89,17 @@ public class ScoreHandler implements HttpHandler {
 
         } else {
             ResponseHandler.code(HTTP_BAD_REQUEST).handle(exchange);
+        }
+    }
+
+    private String getScoreParam(InputStream requestBodyStream) throws IOException {
+        try (InputStreamReader isr = new InputStreamReader(requestBodyStream, StandardCharsets.UTF_8)) {
+            BufferedReader br = new BufferedReader(isr);
+            String scoreStr = br.readLine();
+            if (!Strings.isNotEmpty(scoreStr)) {
+                scoreStr = "score";
+            }
+            return scoreStr;
         }
     }
 }

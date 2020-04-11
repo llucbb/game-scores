@@ -32,16 +32,14 @@ public class HighScoreHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
 
-        String levelStr = paths[1];
+        String pLevel = paths[1];
+        if (isNumeric(pLevel)) {
 
-        if (isNumeric(levelStr)) {
-
-            int level = Integer.parseInt(levelStr);
+            int level = Integer.parseInt(pLevel);
             String result = scoresService.getHighScoresForLevel(level);
 
             if (Strings.isNotEmpty(result)) {
-                LOG.info(String.format("High score list '%s' has been retrieved for level %d", result,
-                        level));
+                LOG.info(String.format("High score list '%s' has been retrieved for level %d", result, level));
             } else {
                 LOG.warning(String.format("High score list empty has been retrieved for level %d", level));
             }

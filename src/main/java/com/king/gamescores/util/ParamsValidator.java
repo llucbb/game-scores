@@ -42,12 +42,11 @@ public final class ParamsValidator {
     /**
      * Validates if the session key value and param name have been provided
      *
-     * @param sessionKeyParams the string array with the param name and the value of the session key
+     * @param sessionKey the value of the session key
      * @return true if the session key value and param name have been provided, false otherwise
      */
-    public static boolean isSessionKeyProvided(String[] sessionKeyParams) {
-        if (sessionKeyParams == null || sessionKeyParams.length != 2
-                || !sessionKeyParams[0].equals(SESSION_KEY) || !Strings.isNotEmpty(sessionKeyParams[1])) {
+    public static boolean isSessionKeyProvided(String sessionKey) {
+        if (!Strings.isNotEmpty(sessionKey)) {
             LOG.log(SEVERE, ERR_SESSION_KEY_NOT_PROVIDED);
             return false;
         }
