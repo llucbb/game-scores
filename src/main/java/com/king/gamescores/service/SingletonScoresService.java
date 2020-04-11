@@ -32,7 +32,7 @@ public class SingletonScoresService extends DefaultScoresService {
      * <ul>
      * <li>First time, it can affect performance.</li>
      *
-     * @return the {@link SingletonScoresService} intance
+     * @return the {@link SingletonScoresService} instance
      */
     public static SingletonScoresService getInstance() {
         if (instance == null) {

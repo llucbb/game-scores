@@ -46,8 +46,8 @@ public class ScoresServer {
         startServer(port, workers);
     }
 
-    public static ScoresServer start(int port) throws IOException {
-        return new ScoresServer(port);
+    public static void start(int port) throws IOException {
+        new ScoresServer(port);
     }
 
     public static ScoresServer start(int port, int workers) throws IOException {

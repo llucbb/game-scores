@@ -10,17 +10,17 @@ particular attention to:
 
 The solution should not take more than half a day to write, though it will be difficult to write a “complete”
 and top-notch solution in such a short time span. The goal is not to get a solution covering all special
-cases in a 100% robust way; the functions should be error free when used correctly but our main goal is
+cases in a 100% robust way; the functions should be error free when used correctly, but our main goal is
 to understand your approach to the problem.
 
 #### 2 Description
-Write a HTTP-based mini game back-end in Java which registers game scores for different users and
+Write an HTTP-based mini game back-end in Java which registers game scores for different users and
 levels, with the capability to return high score lists per level. There shall also be a simple login-system in
 place (without any authentication...).
 
 Deliver a zip file containing:
 - The code in the src-folder
-- A compiled version in a executable .jar file in the root folder
+- A compiled version in an executable .jar file in the root folder
 - An optional readme.txt or .pdf with thoughts and considerations around the program
 
 Please note: This type of exhaustive specification is extremely rare at King and does by no means
@@ -38,9 +38,9 @@ For HTTP, use com.sun.net.httpserver.HttpServer.
 future without crashing anyway.
 
 #### 4 Functional requirements
-The functions are described in detail below and the notation <value> means a call parameter value or a
+The functions are described in detail below, and the notation <value> means a call parameter value or a
 return value. All calls shall result in the HTTP status code 200, unless when something goes wrong,
-where anything but 200 must be returned. Numbers parameters and return values are sent in decimal
+where anything but 200 musts be returned. Numbers parameters and return values are sent in decimal
 ASCII representation as expected (ie no binary format).
 
 Users and levels are created “ad-hoc”, the first time they are referenced.
@@ -71,7 +71,7 @@ with valid session keys shall be processed.
 ##### 4.3 Get a high score list for a level
 Retrieves the high scores for a specific level. The result is a comma separated list in descending score
 order. Because of memory reasons no more than 15 scores are to be returned for each level. Only the
-highest score counts. ie: an user id can only appear at most once in the list. If a user hasn't submitted a
+highest score counts. ie: a user id can only appear at most once in the list. If a user hasn't submitted a
 score for the level, no score is present for that user. A request for a high score list of a level without any
 scores submitted shall be an empty string.
 

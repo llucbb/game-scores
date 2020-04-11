@@ -16,7 +16,7 @@ public class DefaultScoresService implements ScoresService {
     private static final String MAX_SCORES_PER_LEVEL = "scores.maxScoresPerLevel";
 
     protected Map<Integer, Map<Integer, Integer>> scoresByLevel;
-    protected int maxScoresPerLevel;
+    protected final int maxScoresPerLevel;
 
     /**
      * Constructs a {@link DefaultScoresService} with the default maximum number of scores per level

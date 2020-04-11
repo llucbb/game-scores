@@ -52,7 +52,7 @@ public class TokenSessionKeyService implements SessionKeyService {
      * level.
      *
      * @param sessionKey The session key in string format
-     * @return
+     * @return the userId for the given session key
      * @throws SignatureException
      */
     @Override
