@@ -44,6 +44,7 @@ public class MultiThreadScoresServiceTest {
         Assert.assertFalse(result.isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
     private String register(final ScoresService scoresService) throws InterruptedException, ExecutionException {
         CompletableFuture<Void>[] futures = new CompletableFuture[MAX_THREADS];
         for (int i = 0; i < MAX_THREADS; i++) {
