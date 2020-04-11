@@ -1,6 +1,7 @@
 package com.king.gamescores.handler;
 
 import com.king.gamescores.filter.ParameterFilter;
+import com.king.gamescores.service.DefaultScoresService;
 import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SessionKeyService;
 import com.king.gamescores.service.SingletonScoresService;
@@ -34,7 +35,7 @@ public class ScoreHandler implements HttpHandler {
 
     public ScoreHandler(SessionKeyService sessionKeyService) {
         this.sessionKeyService = sessionKeyService;
-        scoresService = SingletonScoresService.getInstance();
+        scoresService = new DefaultScoresService();
     }
 
     @Override
