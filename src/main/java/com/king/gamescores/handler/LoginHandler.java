@@ -1,5 +1,6 @@
 package com.king.gamescores.handler;
 
+import com.king.gamescores.server.HttpMethod;
 import com.king.gamescores.service.SessionKeyService;
 import com.king.gamescores.service.TokenSessionKeyService;
 import com.sun.net.httpserver.HttpExchange;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.logging.Logger;
 
+import static com.king.gamescores.util.HttpMethodValidator.isMethodValid;
 import static com.king.gamescores.util.ParamsValidator.isNumeric;
 import static java.net.HttpURLConnection.*;
 import static java.util.logging.Level.INFO;
@@ -30,6 +32,8 @@ public class LoginHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        if (!isMethodValid(HttpMethod.GET, exchange)) return;
+
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
 

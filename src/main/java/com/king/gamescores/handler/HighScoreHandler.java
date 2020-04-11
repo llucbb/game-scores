@@ -1,5 +1,6 @@
 package com.king.gamescores.handler;
 
+import com.king.gamescores.server.HttpMethod;
 import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SingletonScoresService;
 import com.king.gamescores.util.Strings;
@@ -9,6 +10,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import static com.king.gamescores.util.HttpMethodValidator.isMethodValid;
 import static com.king.gamescores.util.ParamsValidator.isNumeric;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -29,6 +31,8 @@ public class HighScoreHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        if (!isMethodValid(HttpMethod.GET, exchange)) return;
+
         String path = exchange.getRequestURI().getPath();
         String[] paths = path.split("/");
 

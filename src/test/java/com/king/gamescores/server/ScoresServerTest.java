@@ -23,8 +23,7 @@ import java.util.logging.Logger;
 
 import static com.king.gamescores.server.HttpMethod.GET;
 import static com.king.gamescores.server.HttpMethod.POST;
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.*;
 import static org.junit.Assert.*;
 
 public class ScoresServerTest {
@@ -93,6 +92,21 @@ public class ScoresServerTest {
     }
 
     @Test
+    public void loginNotGetMethodShouldFail() throws IOException {
+        scoresServer = ScoresServer.start(PORT, 1).loginHandler(new LoginHandler(sessionKeyService));
+        URL url = new URL(String.format(BASE_URL.concat("/%s/login"), EXPECTED_USER_ID));
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(POST.toString());
+
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        String token = getResponse(conn);
+
+        assertEquals(HTTP_BAD_METHOD, responseCode);
+        assertFalse(Strings.isNotEmpty(token));
+    }
+
+    @Test
     public void loginNonNumericUserIdShouldFail() throws IOException {
         scoresServer = ScoresServer.start(PORT, 1).loginHandler(new LoginHandler(sessionKeyService));
         URL url = new URL(String.format(BASE_URL.concat("/%s/login"), "nonNumeric"));
@@ -136,6 +150,21 @@ public class ScoresServerTest {
         assertEquals(HTTP_OK, responseCode);
         assertTrue(Strings.isNotEmpty(token));
         assertEquals(EXPECTED_TOKEN, token);
+    }
+
+    @Test
+    public void scoreNotPostMethodShouldFail() throws IOException {
+        scoresServer = ScoresServer.start(PORT, 1).scoreHandler(new ScoreHandler(sessionKeyService));
+        URL url = new URL(String.format(BASE_URL.concat("/%d/score?sessionkey=%s"), EXPECTED_LEVEL, EXPECTED_TOKEN));
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(GET.toString());
+
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        String response = getResponse(conn);
+
+        assertEquals(HTTP_BAD_METHOD, responseCode);
+        assertFalse(Strings.isNotEmpty(response));
     }
 
     @Test
@@ -216,6 +245,21 @@ public class ScoresServerTest {
         String response = getResponse(conn);
 
         assertEquals(HTTP_OK, responseCode);
+        assertFalse(Strings.isNotEmpty(response));
+    }
+
+    @Test
+    public void highScoreListNotGetMethodShouldFail() throws IOException {
+        scoresServer = ScoresServer.start(PORT, 1).highScoreHandler(new HighScoreHandler(scoresService));
+        URL url = new URL(String.format(BASE_URL.concat("/%d/highscorelist"), EXPECTED_LEVEL));
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(POST.toString());
+
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        String response = getResponse(conn);
+
+        assertEquals(HTTP_BAD_METHOD, responseCode);
         assertFalse(Strings.isNotEmpty(response));
     }
 
