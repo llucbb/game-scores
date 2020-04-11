@@ -11,8 +11,13 @@ import static java.net.HttpURLConnection.HTTP_BAD_METHOD;
 public class HttpMethodValidator {
 
     public static boolean isMethodValid(HttpMethod methodExpected, HttpExchange exchange) throws IOException {
-        HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
-        if (!methodExpected.equals(method)) {
+        try {
+            HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
+            if (!methodExpected.equals(method)) {
+                ResponseHandler.code(HTTP_BAD_METHOD).handle(exchange);
+                return false;
+            }
+        } catch (IllegalArgumentException e) {
             ResponseHandler.code(HTTP_BAD_METHOD).handle(exchange);
             return false;
         }
