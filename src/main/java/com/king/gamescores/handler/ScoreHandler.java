@@ -31,7 +31,7 @@ public class ScoreHandler implements HttpHandler {
     private final ScoresService scoresService;
 
     public ScoreHandler() {
-        sessionKeyService = new TokenSessionKeyService("changeit");
+        sessionKeyService = new TokenSessionKeyService();
         scoresService = SingletonScoresService.getInstance();
     }
 

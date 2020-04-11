@@ -16,11 +16,6 @@ public class SingletonScoresService extends DefaultScoresService {
         scoresByLevel = new ConcurrentHashMap<>();
     }
 
-    private SingletonScoresService(int maxNumber) {
-        super(maxNumber);
-        scoresByLevel = new ConcurrentHashMap<>();
-    }
-
     /**
      * In this method, getInstance is not synchronized but the block which creates instance is synchronized so that
      * minimum number of threads have to wait and that’s only for first time. <br>
@@ -39,17 +34,6 @@ public class SingletonScoresService extends DefaultScoresService {
      *
      * @return the {@link SingletonScoresService} intance
      */
-    public static SingletonScoresService getInstance(int maxNumber) {
-        if (instance == null) {
-            synchronized (SingletonScoresService.class) {
-                if (instance == null) {
-                    instance = new SingletonScoresService(maxNumber);
-                }
-            }
-        }
-        return instance;
-    }
-
     public static SingletonScoresService getInstance() {
         if (instance == null) {
             synchronized (SingletonScoresService.class) {
@@ -66,18 +50,18 @@ public class SingletonScoresService extends DefaultScoresService {
      * registered for each level. The data structures are hash tables supporting full concurrency of retrievals and high
      * expected concurrency for updates.
      *
-     * @param level      level of the scoreValue to register, 31 bit unsigned integer number
-     * @param userId     userId of the scoreValue to register, 31 bit unsigned integer number
-     * @param scoreValue scoreValue to register, 31 bit unsigned integer number
+     * @param level  level of the scoreValue to register, 31 bit unsigned integer number
+     * @param userId userId of the scoreValue to register, 31 bit unsigned integer number
+     * @param score  scoreValue to register, 31 bit unsigned integer number
      */
     @Override
-    public void registerScore(int level, int userId, int scoreValue) {
+    public void registerScore(int level, int userId, int score) {
         Map<Integer, Integer> scores = scoresByLevel.get(level);
         if (scores != null) {
-            register(userId, scoreValue, scores);
+            register(userId, score, scores);
         } else {
-            scores = new ConcurrentHashMap<>(maxNumber);
-            scores.put(userId, scoreValue);
+            scores = new ConcurrentHashMap<>(maxScoresPerLevel);
+            scores.put(userId, score);
             scoresByLevel.put(level, scores);
         }
     }

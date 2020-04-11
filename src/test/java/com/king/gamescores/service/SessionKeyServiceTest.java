@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SessionKeyServiceTest {
 
-    private final SessionKeyService sessionKeyService = new TokenSessionKeyService("test");
+    private final SessionKeyService sessionKeyService = new TokenSessionKeyService();
 
     @Test
     public void generateSessionKey() throws SignatureException {

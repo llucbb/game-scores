@@ -24,14 +24,13 @@ public class MultiThreadScoresServiceTest {
     }
 
     private static final int LEVEL = 1;
-    private static final int MAX_USERS = 1000;
-    private static final int MAX_RESULTS = 15;
-    private static final int MAX_THREADS = 1000;
-    private static final int MAX_SCORE = 1000000;
+    private static final int MAX_USERS = 100;
+    private static final int MAX_THREADS = 100;
+    private static final int MAX_SCORE = 100000;
 
     @Test
     public void registerScoreMultithreaded() throws ExecutionException, InterruptedException {
-        String result = register(SingletonScoresService.getInstance(MAX_RESULTS));
+        String result = register(SingletonScoresService.getInstance());
 
         Assert.assertNotNull(result);
         Assert.assertFalse(result.isEmpty());
@@ -39,7 +38,7 @@ public class MultiThreadScoresServiceTest {
 
     @Test(expected = ExecutionException.class)
     public void registerScoreNotThreadSafe() throws ExecutionException, InterruptedException {
-        String result = register(new DefaultScoresService(MAX_RESULTS));
+        String result = register(new DefaultScoresService());
 
         Assert.assertNotNull(result);
         Assert.assertFalse(result.isEmpty());
@@ -67,12 +66,11 @@ public class MultiThreadScoresServiceTest {
     }
 
     private void registerScores(ScoresService scoresService, int task) {
-        LOG.info("-> start registerScores task " + task);
         for (int i = 0; i < MAX_USERS; i++) {
             scoresService.registerScore(LEVEL,
                     ThreadLocalRandom.current().nextInt(1, MAX_USERS),
                     ThreadLocalRandom.current().nextInt(1, MAX_SCORE));
         }
-        LOG.info("<- end registerScores task " + task);
     }
+
 }

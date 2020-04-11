@@ -11,7 +11,7 @@ public class ScoresServiceTest {
 
     @Before
     public void setUp() {
-        scoresService = new DefaultScoresService(5);
+        scoresService = new DefaultScoresService();
     }
 
     @Test

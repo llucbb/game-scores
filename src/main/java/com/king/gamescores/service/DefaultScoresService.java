@@ -1,5 +1,7 @@
 package com.king.gamescores.service;
 
+import com.king.gamescores.properties.PropertiesManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,26 +13,18 @@ import java.util.stream.Collectors;
 
 public class DefaultScoresService implements ScoresService {
 
-    protected static final int DEFAULT_MAX_NUMBER = 15;
+    private static final String MAX_SCORES_PER_LEVEL = "scores.maxScoresPerLevel";
+
     protected Map<Integer, Map<Integer, Integer>> scoresByLevel;
-    protected int maxNumber;
+    protected int maxScoresPerLevel;
 
     /**
      * Constructs a {@link DefaultScoresService} with the default maximum number of scores per level
      */
-    protected DefaultScoresService() {
+    public DefaultScoresService() {
+        PropertiesManager propertiesManager = PropertiesManager.getInstance();
+        maxScoresPerLevel = propertiesManager.getInt(MAX_SCORES_PER_LEVEL);
         scoresByLevel = new HashMap<>();
-        maxNumber = DEFAULT_MAX_NUMBER;
-    }
-
-    /**
-     * For tests proposes. Constructs a {@link DefaultScoresService} with the given maximum number of scores per level
-     *
-     * @param maxNumber maximum number of scores per level
-     */
-    protected DefaultScoresService(int maxNumber) {
-        scoresByLevel = new HashMap<>();
-        this.maxNumber = maxNumber;
     }
 
     /**
@@ -38,18 +32,18 @@ public class DefaultScoresService implements ScoresService {
      * registered for each level. The data structures are hash tables supporting full concurrency of retrievals and high
      * expected concurrency for updates.
      *
-     * @param level      level of the scoreValue to register, 31 bit unsigned integer number
-     * @param userId     userId of the scoreValue to register, 31 bit unsigned integer number
-     * @param scoreValue scoreValue to register, 31 bit unsigned integer number
+     * @param level  level of the scoreValue to register, 31 bit unsigned integer number
+     * @param userId userId of the scoreValue to register, 31 bit unsigned integer number
+     * @param score  score to register, 31 bit unsigned integer number
      */
     @Override
-    public void registerScore(int level, int userId, int scoreValue) {
+    public void registerScore(int level, int userId, int score) {
         Map<Integer, Integer> scores = scoresByLevel.get(level);
         if (scores != null) {
-            register(userId, scoreValue, scores);
+            register(userId, score, scores);
         } else {
-            scores = new HashMap<>(maxNumber);
-            scores.put(userId, scoreValue);
+            scores = new HashMap<>(maxScoresPerLevel);
+            scores.put(userId, score);
             scoresByLevel.put(level, scores);
         }
     }
@@ -58,7 +52,7 @@ public class DefaultScoresService implements ScoresService {
         Integer currentScore = scores.get(userId);
         boolean higherScore = currentScore != null && currentScore.compareTo(scoreValue) < 0;
         if (currentScore == null || higherScore) {
-            if (scores.size() >= maxNumber) {
+            if (scores.size() >= maxScoresPerLevel) {
                 Entry<Integer, Integer> min = scores.entrySet().stream()
                         .min(Entry.comparingByValue(Integer::compareTo)).get();
                 if (min.getValue().compareTo(scoreValue) < 0) {

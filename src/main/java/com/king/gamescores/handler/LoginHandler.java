@@ -21,7 +21,7 @@ public class LoginHandler implements HttpHandler {
     private final SessionKeyService sessionKeyService;
 
     public LoginHandler() {
-        sessionKeyService = new TokenSessionKeyService("changeit");
+        sessionKeyService = new TokenSessionKeyService();
     }
 
     public LoginHandler(SessionKeyService sessionKeyService) {

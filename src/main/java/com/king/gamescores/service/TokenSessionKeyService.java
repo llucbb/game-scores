@@ -1,11 +1,13 @@
 package com.king.gamescores.service;
 
+import com.king.gamescores.properties.PropertiesManager;
 import com.king.gamescores.token.TokenBuilder;
 import com.king.gamescores.token.TokenParser;
 
 import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 
 /**
  * Generates a token, a compact and self-contained way to securely generate the required unique session key. Contains a
@@ -14,21 +16,19 @@ import java.time.format.DateTimeFormatter;
  */
 public class TokenSessionKeyService implements SessionKeyService {
 
-    private static final long EXPIRATION_SECONDS = 600; //10 min
+    private static final String SECRET_KEY = "scores.secretKey";
+    private static final String SESSION_EXPIRATION = "scores.sessionExpiration";
 
     private final String secretKey;
-
-    private TokenSessionKeyService() {
-        secretKey = null;
-    }
+    private final long expirationMS;
 
     /**
-     * Constructs a {@link TokenSessionKeyService} with the given secretKey
-     *
-     * @param secretKey the secret key
+     * Constructs a {@link TokenSessionKeyService}
      */
-    public TokenSessionKeyService(String secretKey) {
-        this.secretKey = secretKey;
+    public TokenSessionKeyService() {
+        PropertiesManager propertiesManager = PropertiesManager.getInstance();
+        secretKey = propertiesManager.getProperty(SECRET_KEY);
+        expirationMS = propertiesManager.getLong(SESSION_EXPIRATION);
     }
 
     /**
@@ -43,7 +43,7 @@ public class TokenSessionKeyService implements SessionKeyService {
         return TokenBuilder.builder()
                 .signWith(secretKey)
                 .setUserId(String.valueOf(userId))
-                .setExpiration(LocalDateTime.now().plusSeconds(EXPIRATION_SECONDS))
+                .setExpiration(LocalDateTime.now().plus(expirationMS, ChronoField.MILLI_OF_DAY.getBaseUnit()))
                 .build();
     }
 
