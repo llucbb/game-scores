@@ -47,9 +47,8 @@ public class MultiThreadScoresServiceTest {
     private String register(final ScoresService scoresService) throws InterruptedException, ExecutionException {
         CompletableFuture<Void>[] futures = new CompletableFuture[MAX_THREADS];
         for (int i = 0; i < MAX_THREADS; i++) {
-            final int task = i;
             futures[i] = CompletableFuture.runAsync(() -> {
-                registerScores(scoresService, task);
+                registerScores(scoresService);
                 scoresService.getHighScoresForLevel(LEVEL);
             });
         }
@@ -65,7 +64,7 @@ public class MultiThreadScoresServiceTest {
 
     }
 
-    private void registerScores(ScoresService scoresService, int task) {
+    private void registerScores(ScoresService scoresService) {
         for (int i = 0; i < MAX_USERS; i++) {
             scoresService.registerScore(LEVEL,
                     ThreadLocalRandom.current().nextInt(1, MAX_USERS),
