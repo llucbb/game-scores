@@ -5,15 +5,10 @@ import com.king.gamescores.service.ScoresService;
 import com.king.gamescores.service.SessionKeyService;
 import com.king.gamescores.service.SingletonScoresService;
 import com.king.gamescores.service.TokenSessionKeyService;
-import com.king.gamescores.util.Strings;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -89,17 +84,6 @@ public class ScoreHandler implements HttpHandler {
 
         } else {
             ResponseHandler.code(HTTP_BAD_REQUEST).handle(exchange);
-        }
-    }
-
-    private String getScoreParam(InputStream requestBodyStream) throws IOException {
-        try (InputStreamReader isr = new InputStreamReader(requestBodyStream, StandardCharsets.UTF_8)) {
-            BufferedReader br = new BufferedReader(isr);
-            String scoreStr = br.readLine();
-            if (!Strings.isNotEmpty(scoreStr)) {
-                scoreStr = "score";
-            }
-            return scoreStr;
         }
     }
 }
