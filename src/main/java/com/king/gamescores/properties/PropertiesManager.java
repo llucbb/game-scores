@@ -42,7 +42,7 @@ public class PropertiesManager {
         return instance;
     }
 
-    public String getProperty(String property) {
+    public String getString(String property) {
         String value = properties.getProperty(property);
         if (!Strings.isNotEmpty(value)) {
             throw new IllegalArgumentException(property + PROPERTY_IS_MANDATORY);

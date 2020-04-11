@@ -16,7 +16,7 @@ public class PropertiesManagerTest {
 
     @Test
     public void getPropertyString() {
-        String value = propertyLoader.getProperty("scores.secretKey");
+        String value = propertyLoader.getString("scores.secretKey");
 
         assertNotNull(value);
         assertEquals("changeit", value);
@@ -24,7 +24,7 @@ public class PropertiesManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void getPropertyStringNotDefinedShouldFail() {
-        propertyLoader.getProperty("secores.wromgproperty");
+        propertyLoader.getString("secores.wromgproperty");
     }
 
     @Test

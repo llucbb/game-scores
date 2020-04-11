@@ -27,7 +27,7 @@ public class TokenSessionKeyService implements SessionKeyService {
      */
     public TokenSessionKeyService() {
         PropertiesManager propertiesManager = PropertiesManager.getInstance();
-        secretKey = propertiesManager.getProperty(SECRET_KEY);
+        secretKey = propertiesManager.getString(SECRET_KEY);
         expirationMS = propertiesManager.getLong(SESSION_EXPIRATION);
     }
 
